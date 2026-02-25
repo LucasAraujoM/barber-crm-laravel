@@ -12,4 +12,9 @@ class Client extends Model
         'phone',
         'notes',
     ];
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }

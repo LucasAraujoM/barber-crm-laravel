@@ -1,6 +1,13 @@
-<div x-data="{ open: false }" @keydown.escape.window="open = false">
-    <!-- Trigger Button - Using the URL from the slot or attribute -->
-    <a href="#" @click.prevent="open = true" class="text-indigo-600 hover:text-indigo-900">Editar</a>
+<div x-data="{ open: {{ $errors->any() ? 'true' : 'false' }} }" @keydown.escape.window="open = false">
+    <!-- Trigger Button -->
+    <button @click="open = true" type="button"
+        class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-sm cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Agregar Miembro
+    </button>
 
     <!-- Modal Backdrop -->
     <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
@@ -22,7 +29,8 @@
 
                 <!-- Modal Header -->
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 border-b border-gray-100 flex justify-between items-center">
-                    <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Editar Personal</h3>
+                    <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Nuevo Miembro del
+                        Personal</h3>
                     <button @click="open = false" class="text-gray-400 hover:text-gray-500 transition-colors">
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd"
@@ -32,45 +40,22 @@
                     </button>
                 </div>
 
-                <form action="{{ route('staff.update', $staff->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('staff.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    @method('PUT')
                     <div class="px-4 py-5 sm:p-6 space-y-4">
                         <!-- Avatar Upload -->
-                        <div x-data x-init="
-                                FilePond.create($refs.input, {
-                                    storeAsFile: true,
-                                    name: 'avatar',
-                                    labelIdle: `Arrastra y suelta tu foto o <span class='filepond--label-action'>Explorar</span>`,
-                                    imagePreviewHeight: 100,
-                                    imageCropAspectRatio: '1:1',
-                                    imageResizeTargetWidth: 200,
-                                    imageResizeTargetHeight: 200,
-                                    stylePanelLayout: 'compact circle',
-                                    styleLoadIndicatorPosition: 'center bottom',
-                                    styleProgressIndicatorPosition: 'right bottom',
-                                    styleButtonRemoveItemPosition: 'left bottom',
-                                    styleButtonProcessItemPosition: 'right bottom',
-                                    @if($staff->avatar)
-                                        files: [
-                                            {
-                                                source: '{{ asset('storage/' . $staff->avatar) }}',
-                                                options: {
-                                                    type: 'local',
-                                                },
-                                            },
-                                        ],
-                                    @endif
-                                });
-                            ">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Foto de Perfil</label>
-                            <input type="file" x-ref="input" name="avatar" accept="image/png, image/jpeg, image/gif" />
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Foto de Perfil</label>
+                            <input type="file" name="avatar" id="avatar" accept="image/*">
+                            @error('avatar')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
+
 
                         <!-- Name -->
                         <div>
-                            <label for="name_{{ $staff->id }}" class="block text-sm font-medium text-gray-700">Nombre
-                                Completo</label>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Nombre Completo <span class="text-red-500">*</span></label>
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -79,16 +64,18 @@
                                             clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                                <input type="text" name="name" id="name_{{ $staff->id }}" required
-                                    value="{{ $staff->name }}"
-                                    class="block w-full pl-10 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
+                                <input type="text" name="name" id="name" required value="{{ old('name') }}"
+                                    class="block w-full pl-10 rounded-md @error('name') border-red-300 @else border-gray-300 @enderror focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
                                     placeholder="Jane Doe">
                             </div>
+                            @error('name')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Email -->
                         <div>
-                            <label for="email_{{ $staff->id }}" class="block text-sm font-medium text-gray-700">Correo
+                            <label for="email" class="block text-sm font-medium text-gray-700">Correo
                                 Electrónico</label>
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -98,17 +85,19 @@
                                         <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                                     </svg>
                                 </div>
-                                <input type="email" name="email" id="email_{{ $staff->id }}" required
-                                    value="{{ $staff->email }}"
-                                    class="block w-full pl-10 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
+                                <input type="email" name="email" id="email" value="{{ old('email') }}"
+                                    class="block w-full pl-10 rounded-md @error('email') border-red-300 @else border-gray-300 @enderror focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
                                     placeholder="jane@example.com">
                             </div>
+                            @error('email')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Phone -->
                         <div>
-                            <label for="phone_{{ $staff->id }}" class="block text-sm font-medium text-gray-700">Número
-                                de Teléfono</label>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Número de
+                                Teléfono</label>
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -116,7 +105,7 @@
                                             d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                                     </svg>
                                 </div>
-                                <input type="text" name="phone" id="phone_{{ $staff->id }}" value="{{ $staff->phone }}"
+                                <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
                                     class="block w-full pl-10 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
                                     placeholder="+1 (555) 000-0000">
                             </div>
@@ -124,29 +113,24 @@
 
                         <!-- Role -->
                         <div>
-                            <label for="role_{{ $staff->id }}"
-                                class="block text-sm font-medium text-gray-700">Rol</label>
+                            <label for="role" class="block text-sm font-medium text-gray-700">Rol</label>
                             <div class="mt-1">
-                                <select id="role_{{ $staff->id }}" name="role"
+                                <select id="role" name="role"
                                     class="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                    <option value="Staff" {{ $staff->role == 'Staff' ? 'selected' : '' }}>Personal
-                                    </option>
-                                    <option value="Manager" {{ $staff->role == 'Manager' ? 'selected' : '' }}>Gerente
-                                    </option>
-                                    <option value="Admin" {{ $staff->role == 'Admin' ? 'selected' : '' }}>Administrador
-                                    </option>
+                                    <option value="Staff" {{ old('role') == 'Staff' ? 'selected' : '' }}>Personal</option>
+                                    <option value="Manager" {{ old('role') == 'Manager' ? 'selected' : '' }}>Gerente</option>
+                                    <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Administrador</option>
                                 </select>
                             </div>
                         </div>
 
                         <!-- Notes -->
                         <div>
-                            <label for="notes_{{ $staff->id }}"
-                                class="block text-sm font-medium text-gray-700">Notas</label>
+                            <label for="notes" class="block text-sm font-medium text-gray-700">Notas</label>
                             <div class="mt-1">
-                                <textarea id="notes_{{ $staff->id }}" name="notes" rows="3"
-                                    class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
-                                    placeholder="Información adicional...">{{ $staff->notes }}</textarea>
+                                <textarea id="notes" name="notes" rows="3"
+                                    class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2 p-2"
+                                    placeholder="Información adicional...">{{ old('notes') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -156,7 +140,7 @@
                         class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-100 rounded-b-xl">
                         <button type="submit"
                             class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto transition-colors">
-                            Actualizar Miembro
+                            Guardar
                         </button>
                         <button type="button" @click="open = false"
                             class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors">
@@ -167,4 +151,25 @@
             </div>
         </div>
     </div>
+    @section('scripts')
+        <script>
+            FilePond.registerPlugin(FilePondPluginImagePreview);
+            const inputElement = document.querySelector('input[id="avatar"]');
+            const pond = FilePond.create(inputElement, {
+                storeAsFile: true,
+                name: 'avatar',
+                allowImagePreview: true,
+                labelIdle: `Arrastra y suelta la foto o <span class='filepond--label-action'>Explorar</span>`,
+                stylePanelLayout: 'circle',
+                imagePreviewHeight: 100,
+                imageCropAspectRatio: '1:1',
+                imageResizeTargetWidth: 200,
+                imageResizeTargetHeight: 200,
+                styleLoadIndicatorPosition: 'center bottom',
+                styleProgressIndicatorPosition: 'center bottom',
+                styleButtonRemoveItemPosition: 'center bottom',
+                styleButtonProcessItemPosition: 'center bottom',
+            });
+        </script>
+    @endsection
 </div>

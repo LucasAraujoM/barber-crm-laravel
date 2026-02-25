@@ -4,19 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Staff extends Model
+class Service extends Model
 {
     protected $fillable = [
         'name',
-        'email',
-        'phone',
-        'role',
-        'avatar',
+        'description',
+        'price',
         'notes',
     ];
 
     public function appointments()
     {
-        return $this->hasMany(Appointment::class);
+        return $this->belongsToMany(Appointment::class);
     }
 }

@@ -4,15 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Appointment extends Model
+class Invoice extends Model
 {
     protected $fillable = [
         'client_id',
-        'guest_name',
         'staff_id',
-        'date',
-        'start_time',
-        'end_time',
         'notes',
         'status',
     ];
@@ -22,13 +18,13 @@ class Appointment extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function services()
-    {
-        return $this->belongsToMany(Service::class);
-    }
-
     public function staff()
     {
         return $this->belongsTo(Staff::class);
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'invoice_services')->withPivot('quantity', 'price');
     }
 }

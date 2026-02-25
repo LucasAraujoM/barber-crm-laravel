@@ -9,3 +9,36 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* ── Metric Cards ─────────────────────────────────────────── */
+.metric-card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-start gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
+}
+
+.metric-icon {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center shrink-0;
+}
+
+.metric-label {
+    @apply text-xs font-medium text-gray-400 uppercase tracking-wide mb-0.5;
+}
+
+.metric-value {
+    @apply text-3xl font-extrabold text-gray-800 leading-none mb-1.5;
+}
+
+.metric-badge {
+    @apply inline-flex items-center text-xs font-semibold;
+}
+
+.badge-up {
+    @apply text-emerald-600;
+}
+
+.badge-down {
+    @apply text-rose-500;
+}
+
+.metric-sub {
+    @apply text-xs text-gray-400;
+}
