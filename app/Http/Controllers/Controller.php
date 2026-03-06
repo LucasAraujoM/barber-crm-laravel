@@ -11,6 +11,9 @@ use Log;
 
 class Controller
 {
+    /**
+     * Dashboard principal: recopila métricas, calendario y actividad reciente.
+     */
     public function index()
     {
         $now = \Carbon\Carbon::now();

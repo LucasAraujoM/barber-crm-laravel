@@ -20,6 +20,7 @@
 /storage/pail
 /vendor
 /app-data
+/nativephp
 Homestead.json
 Homestead.yaml
 Thumbs.db

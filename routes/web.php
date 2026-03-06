@@ -1,36 +1,36 @@
 <?php
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Dashboard;
+use App\Livewire\StaffManagement;
+use App\Livewire\ClientManagement;
+use App\Livewire\ServiceManagement;
+use App\Livewire\AppointmentManagement;
+use App\Http\Controllers\AppointmentController;
 
-Route::get('/', [Controller::class, 'index'])->name('home');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
-// Staff
-Route::get('/staff', [StaffController::class, 'index'])->name('staff');
-Route::post('/staff/store', [StaffController::class, 'store'])->name('staff.store');
-Route::put('/staff/update/{id}', [StaffController::class, 'update'])->name('staff.update');
-Route::get('/staff/destroy/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+// Dashboard
+Route::get('/', Dashboard::class)->name('home');
 
-// Clientes
-Route::get('/clientes', [ClientController::class, 'index'])->name('clients');
+// Management Sections (Livewire)
+Route::get('/turnos', AppointmentManagement::class)->name('appointments.index');
+Route::get('/clientes', ClientManagement::class)->name('clients');
+Route::get('/servicios', ServiceManagement::class)->name('services.index');
+Route::get('/staff', StaffManagement::class)->name('staff');
 
-// Servicios
-Route::resource('services', ServiceController::class)->except(['create', 'edit', 'show']);
+// Legacy / Helper Routes
+Route::get('/appointments/check-availability', [AppointmentController::class, 'checkAvailability'])->name('appointments.check-availability');
 
-// Turnos
-Route::resource('appointments', AppointmentController::class)->except(['create', 'edit', 'show']);
-
-// Media Handler
+// Media Handler (Local Images)
 Route::get('/media/{path}', function ($path) {
     $fullPath = base_path('app-data/images/' . $path);
-
     if (!file_exists($fullPath)) {
         abort(404);
     }
-
     return response()->file($fullPath);
-})->where('path', '.*');
+});

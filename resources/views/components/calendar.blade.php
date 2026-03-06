@@ -33,27 +33,31 @@
     }
 @endphp
 
-<div class="bg-white p-5 rounded-lg shadow h-full">
-    {{-- FullCalendar Container --}}
-    <div id="calendar"></div>
-</div>
+<div class="w-full relative" x-data="{
+    events: @js($events),
+    calendar: null,
+    initCalendar() {
+        const el = this.$refs.calendarEl;
+        if (!el || !window.FullCalendar) {
+            setTimeout(() => this.initCalendar(), 100);
+            return;
+        }
 
-{{-- Load FullCalendar from CDN --}}
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
+        if (this.calendar) this.calendar.destroy();
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        this.calendar = new window.FullCalendar.Calendar(el, {
+            plugins: [window.FullCalendar.dayGridPlugin, window.FullCalendar.timeGridPlugin, window.FullCalendar.interactionPlugin],
             initialView: 'timeGridDay',
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'timeGridDay,timeGridWeek,dayGridMonth'
+                right: 'timeGridDay,timeGridWeek'
             },
             locale: 'es',
             editable: true,
-            height: 600,
+            height: 693, // Very compact height for dashboard
+            slotMinTime: '08:00:00', //agregar start_time
+            slotMaxTime: '22:00:00', //agregar end_time
             buttonText: {
                 today: 'Hoy',
                 month: 'Mes',
@@ -65,27 +69,136 @@
             timeZone: 'America/Argentina/Buenos_Aires',
             dayMaxEvents: true,
             allDaySlot: false,
-            scrollTime: '{{ now("America/Argentina/Buenos_Aires")->subHours(4)->format("H:i:s") }}',
+            scrollTime: new Date().getHours() + ':00:00',
+            selectable: true,
             nowIndicator: true,
-            events: @json($events),
+            events: this.events,
+            dateClick: (info) => {
+                const date = info.dateStr.split('T')[0];
+                const time = info.dateStr.split('T')[1] ? info.dateStr.split('T')[1].substring(0, 5) : '08:00';
+                $wire.openCreateFromCalendar(date, time);
+            },
+            eventClick: (info) => {
+                $wire.editAppointment(info.event.id);
+            },
+            eventDrop: (info) => {
+                // When an event is dragged and dropped
+                const newStart = info.event.start;
+                const newEnd = info.event.end;
+                $wire.moveAppointment(
+                    info.event.id, 
+                    newStart ? newStart.toISOString() : null, 
+                    newEnd ? newEnd.toISOString() : null
+                );
+            },
+            eventResize: (info) => {
+                // When an event is resized
+                const newStart = info.event.start;
+                const newEnd = info.event.end;
+                $wire.moveAppointment(
+                    info.event.id, 
+                    newStart ? newStart.toISOString() : null, 
+                    newEnd ? newEnd.toISOString() : null
+                );
+            },
             eventContent: function (info) {
-                // Custom render for event content
                 let title = document.createElement('div');
-                title.className = 'fc-event-title font-bold';
+                title.className = 'fc-event-title font-bold text-[10px] uppercase truncate leading-tight';
                 title.innerText = info.event.title;
 
                 let desc = document.createElement('div');
-                desc.className = 'fc-event-description text-xs opacity-90';
-                desc.innerText = info.event.extendedProps.description;
+                desc.className = 'fc-event-description text-[9px] opacity-80 truncate';
+                desc.innerText = info.event.extendedProps.description || info.event.extendedProps.status;
 
                 let container = document.createElement('div');
-                container.className = 'flex flex-col p-1';
+                container.className = 'flex flex-col p-1 overflow-hidden';
                 container.appendChild(title);
-                container.appendChild(desc);
+                if (info.event.extendedProps.description || info.event.extendedProps.status) {
+                    container.appendChild(desc);
+                }
 
                 return { domNodes: [container] };
             }
         });
-        calendar.render();
-    });
-</script>
+
+        // Render carefully to avoid blank screen bugs
+        setTimeout(() => {
+            this.calendar.render();
+        }, 50);
+    }
+}" x-init="initCalendar()">
+    {{-- FullCalendar Container --}}
+    <div x-ref="calendarEl" class="w-full min-h-[380px]"></div>
+</div>
+
+<style>
+    .fc {
+        --fc-border-color: #E5E7EB;
+        --fc-button-bg-color: #ffffff;
+        --fc-button-border-color: #E5E7EB;
+        --fc-button-text-color: #1F2937;
+        --fc-button-hover-bg-color: #F3F4F6;
+        --fc-button-hover-border-color: #D1D5DB;
+        --fc-button-active-bg-color: #3B82F6;
+        --fc-button-active-border-color: #3B82F6;
+        font-family: inherit;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: #1F2937;
+        text-transform: capitalize;
+    }
+
+    .fc .fc-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: 0.75rem;
+        text-transform: uppercase;
+        transition: all 0.2s;
+    }
+
+    .fc .fc-button-primary:not(:disabled).fc-button-active {
+        background-color: #3B82F6 !important;
+        border-color: #3B82F6 !important;
+        color: white !important;
+    }
+
+    .fc .fc-button-primary:focus {
+        box-shadow: none !important;
+    }
+
+    .fc-v-event {
+        border: none !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .fc-timegrid-slot {
+        height: 2rem !important;
+    }
+
+    /* A bit smaller row height for compact view */
+    .fc-col-header-cell {
+        padding: 0.5rem 0 !important;
+        background: #F5F7FA;
+        border: none !important;
+    }
+
+    .fc-col-header-cell-cushion {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #9ca3af;
+        text-transform: uppercase;
+        text-decoration: none !important;
+    }
+
+    .fc-timegrid-axis-cushion,
+    .fc-timegrid-slot-label-cushion {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #9ca3af;
+    }
+</style>

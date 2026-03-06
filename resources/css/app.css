@@ -1,4 +1,15 @@
 @import 'tailwindcss';
+@import 'filepond/dist/filepond.min.css';
+@import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+
+/* 
+   Gestión de Estilos Locales
+   -------------------------
+   Esta aplicación utiliza Tailwind CSS y plugins locales para FilePond.
+   Para garantizar un funcionamiento 100% offline, se utilizan fuentes 
+   nativas del sistema (Segoe UI, Apple System, etc.) lo que elimina 
+   la necesidad de descargar tipografías externas.
+*/
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -8,6 +19,10 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+[x-cloak] {
+    display: none !important;
 }
 
 /* ── Metric Cards ─────────────────────────────────────────── */
