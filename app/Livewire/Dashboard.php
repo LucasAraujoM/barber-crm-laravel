@@ -233,6 +233,7 @@ class Dashboard extends Component
         $this->reset(['editing_id', 'client_id', 'guest_name', 'selected_staff_id', 'date', 'start_time', 'end_time', 'notes', 'selected_services', 'status']);
         $this->loadData();
         $this->dispatch('toast', message: $msg);
+        $this->dispatch('calendar-updated');
     }
 
     public function openCreateFromCalendar($date, $time)
@@ -251,6 +252,7 @@ class Dashboard extends Component
             $this->showQuickModal = false;
             $this->loadData();
             $this->dispatch('toast', message: 'Turno eliminado correctamente');
+            $this->dispatch('calendar-updated');
         }
     }
 
@@ -272,6 +274,7 @@ class Dashboard extends Component
             $appt->save();
             $this->loadData();
             $this->dispatch('toast', message: 'Turno reprogramado');
+            $this->dispatch('calendar-updated');
         }
     }
 
@@ -281,6 +284,36 @@ class Dashboard extends Component
         // Default values
         $this->status = 'pendiente';
         $this->showQuickModal = true;
+    }
+
+    public function getEvents()
+    {
+        return Appointment::with(['client', 'staff'])
+            ->get()
+            ->map(function ($appt) {
+                $clientName = $appt->client_id ? ($appt->client->name ?? 'Cliente') : ($appt->guest_name ?? 'Invitado');
+                $color = '#6366f1';
+                if ($appt->status === 'completado')
+                    $color = '#10b981';
+                if ($appt->status === 'cancelado')
+                    $color = '#ef4444';
+                if ($appt->status === 'en_progreso')
+                    $color = '#f59e0b';
+                return [
+                    'id' => $appt->id,
+                    'title' => $clientName . ' (' . ($appt->staff->name ?? '?') . ')',
+                    'start' => Carbon::parse($appt->start_time)->toIso8601String(),
+                    'end' => Carbon::parse($appt->end_time)->toIso8601String(),
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
+                    'extendedProps' => [
+                        'description' => $appt->notes ?? '',
+                        'status' => $appt->status ?? 'pendiente',
+                        'staff' => $appt->staff->name ?? '',
+                        'client' => $clientName,
+                    ],
+                ];
+            });
     }
 
     public function render()
