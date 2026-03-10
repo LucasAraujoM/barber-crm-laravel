@@ -55,7 +55,7 @@
             },
             locale: 'es',
             editable: true,
-            height: 693, // Very compact height for dashboard
+            height: 683, // Very compact height for dashboard
             slotMinTime: '08:00:00', //agregar start_time
             slotMaxTime: '22:00:00', //agregar end_time
             buttonText: {
@@ -83,12 +83,10 @@
             },
             eventDrop: (info) => {
                 // When an event is dragged and dropped
-                const newStart = info.event.start;
-                const newEnd = info.event.end;
                 $wire.moveAppointment(
                     info.event.id, 
-                    newStart ? newStart.toISOString() : null, 
-                    newEnd ? newEnd.toISOString() : null
+                    info.event.startStr, 
+                    info.event.endStr
                 );
             },
             eventResize: (info) => {
@@ -97,8 +95,8 @@
                 const newEnd = info.event.end;
                 $wire.moveAppointment(
                     info.event.id, 
-                    newStart ? newStart.toISOString() : null, 
-                    newEnd ? newEnd.toISOString() : null
+                    info.event.startStr, 
+                    info.event.endStr
                 );
             },
             eventContent: function (info) {
@@ -125,80 +123,16 @@
         setTimeout(() => {
             this.calendar.render();
         }, 50);
+    },
+    async refreshCalendar() {
+        if (!this.calendar) return;
+        const freshEvents = await $wire.getEvents();
+        this.calendar.removeAllEvents();
+        this.calendar.addEventSource(freshEvents);
     }
-}" x-init="initCalendar()">
+}" x-init="initCalendar()" @calendar-updated.window="refreshCalendar()">
     {{-- FullCalendar Container --}}
     <div x-ref="calendarEl" class="w-full min-h-[380px]"></div>
 </div>
 
-<style>
-    .fc {
-        --fc-border-color: #E5E7EB;
-        --fc-button-bg-color: #ffffff;
-        --fc-button-border-color: #E5E7EB;
-        --fc-button-text-color: #1F2937;
-        --fc-button-hover-bg-color: #F3F4F6;
-        --fc-button-hover-border-color: #D1D5DB;
-        --fc-button-active-bg-color: #3B82F6;
-        --fc-button-active-border-color: #3B82F6;
-        font-family: inherit;
-    }
-
-    .fc .fc-toolbar-title {
-        font-size: 1.1rem;
-        font-weight: 900;
-        color: #1F2937;
-        text-transform: capitalize;
-    }
-
-    .fc .fc-button {
-        padding: 0.5rem 1rem;
-        font-size: 0.75rem;
-        font-weight: 700;
-        border-radius: 0.75rem;
-        text-transform: uppercase;
-        transition: all 0.2s;
-    }
-
-    .fc .fc-button-primary:not(:disabled).fc-button-active {
-        background-color: #3B82F6 !important;
-        border-color: #3B82F6 !important;
-        color: white !important;
-    }
-
-    .fc .fc-button-primary:focus {
-        box-shadow: none !important;
-    }
-
-    .fc-v-event {
-        border: none !important;
-        border-radius: 0.5rem !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .fc-timegrid-slot {
-        height: 2rem !important;
-    }
-
-    /* A bit smaller row height for compact view */
-    .fc-col-header-cell {
-        padding: 0.5rem 0 !important;
-        background: #F5F7FA;
-        border: none !important;
-    }
-
-    .fc-col-header-cell-cushion {
-        font-size: 0.7rem;
-        font-weight: 800;
-        color: #9ca3af;
-        text-transform: uppercase;
-        text-decoration: none !important;
-    }
-
-    .fc-timegrid-axis-cushion,
-    .fc-timegrid-slot-label-cushion {
-        font-size: 0.65rem;
-        font-weight: 700;
-        color: #9ca3af;
-    }
-</style>
+{{-- Los estilos de FullCalendar se cargan desde resources/css/app.css con soporte dark/light --}}

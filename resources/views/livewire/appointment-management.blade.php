@@ -72,6 +72,13 @@
                         slotMinTime: '08:00:00',
                         slotMaxTime: '22:00:00',
                         allDaySlot: false,
+                        buttonText: {
+                            today: 'Hoy',
+                            month: 'Mes',
+                            week: 'Semana',
+                            day: 'Día',
+                            list: 'Agenda',
+                        },
                         height: 480,
                         events: this.events,
                         editable: false,
@@ -101,8 +108,15 @@
                     setTimeout(() => {
                         this.calendar.render();
                     }, 50);
+                },
+                async refreshCalendar() {
+                    if (!this.calendar) return;
+                    const freshEvents = await this.$wire.getEvents();
+                    this.calendar.removeAllEvents();
+                    this.calendar.addEventSource(freshEvents);
                 }
-            }" x-init="initCalendar()">
+            }" x-init="initCalendar()"
+               @calendar-updated.window="refreshCalendar()">
                 <div class="bg-white rounded-[1.25rem] shadow-sm border border-[#E5E7EB] p-4 shrink-0">
                     <div class="flex items-center justify-between mb-4">
                         <div>
@@ -187,8 +201,12 @@
                                             'cancelado' => 'bg-rose-500/10 text-rose-400',
                                             default => 'bg-amber-500/10 text-amber-400',
                                         };
+                                        $status = match($appt->status) {
+                                            'en_progreso' => 'en progreso',
+                                            default => $appt->status
+                                        }
                                     @endphp
-                                    <span class="text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full {{ $badgeClass }}">{{ $appt->status }}</span>
+                                    <span class="text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full {{ $badgeClass }}">{{ $status }}</span>
                                     <div class="flex -space-x-1 overflow-hidden opacity-40">
                                         @foreach($appt->services as $svc)
                                             <div class="w-3.5 h-3.5 rounded-full bg-white border-2 border-white"></div>
@@ -339,18 +357,5 @@
         </div>
     </div>
 
-    @push('scripts')
-    <style>
-        .fc { --fc-border-color: #E5E7EB; --fc-button-bg-color: #ffffff; --fc-button-border-color: #E5E7EB; --fc-button-text-color: #1F2937; --fc-button-hover-bg-color: #F3F4F6; --fc-button-hover-border-color: #D1D5DB; --fc-button-active-bg-color: #3B82F6; --fc-button-active-border-color: #3B82F6; font-family: inherit; }
-        .fc .fc-toolbar-title { font-size: 1.1rem; font-weight: 900; color: #1F2937; text-transform: capitalize; }
-        .fc .fc-button { padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 700; border-radius: 0.75rem; text-transform: uppercase; transition: all 0.2s; }
-        .fc .fc-button-primary:not(:disabled).fc-button-active { background-color: #3B82F6 !important; border-color: #3B82F6 !important; color: white !important; }
-        .fc .fc-button-primary:focus { box-shadow: none !important; }
-        .fc-v-event { border: none !important; border-radius: 0.75rem !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .fc-timegrid-slot { height: 2.5rem !important; } /* Comprimido desde 3.5rem */
-        .fc-col-header-cell { padding: 0.75rem 0 !important; background: #F5F7FA; border: none !important; }
-        .fc-col-header-cell-cushion { font-size: 0.7rem; font-weight: 800; color: #6B7280; text-transform: uppercase; text-decoration: none !important; }
-        .fc-timegrid-axis-cushion, .fc-timegrid-slot-label-cushion { font-size: 0.65rem; font-weight: 700; color: #6B7280; }
-    </style>
-    @endpush
+    {{-- Los estilos de FullCalendar se cargan desde resources/css/app.css con soporte dark/light --}}
 </div>

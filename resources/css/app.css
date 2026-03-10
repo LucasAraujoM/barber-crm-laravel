@@ -2,15 +2,6 @@
 @import 'filepond/dist/filepond.min.css';
 @import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 
-/* 
-   Gestión de Estilos Locales
-   -------------------------
-   Esta aplicación utiliza Tailwind CSS y plugins locales para FilePond.
-   Para garantizar un funcionamiento 100% offline, se utilizan fuentes 
-   nativas del sistema (Segoe UI, Apple System, etc.) lo que elimina 
-   la necesidad de descargar tipografías externas.
-*/
-
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -21,11 +12,232 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+/* ══════════════════════════════════════════════════════════
+   TEMA LIGHT (por defecto)
+══════════════════════════════════════════════════════════ */
+:root,
+[data-theme="light"] {
+    --bg-app: #F5F7FA;
+    --bg-surface: #FFFFFF;
+    --bg-surface-2: #F5F7FA;
+    --bg-header: rgba(255, 255, 255, 0.85);
+    --bg-sidebar: #1E293B;
+    --border: #E5E7EB;
+    --text-primary: #1F2937;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    --text-on-dark: #FFFFFF;
+    --input-bg: #F5F7FA;
+    --input-text: #1F2937;
+    --input-border: #E5E7EB;
+    --input-placeholder: #9CA3AF;
+    --accent: #3B82F6;
+    --accent-hover: #2563EB;
+    --fc-bg: #FFFFFF;
+    --fc-header-bg: #F5F7FA;
+    --fc-text: #1F2937;
+    --fc-muted: #9CA3AF;
+    --fc-border: #E5E7EB;
+    --fc-btn-bg: #FFFFFF;
+    --fc-btn-border: #E5E7EB;
+    --fc-btn-hover: #F3F4F6;
+    color-scheme: light;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TEMA DARK
+══════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+    --bg-app: #0F172A;
+    --bg-surface: #1E293B;
+    --bg-surface-2: #293548;
+    --bg-header: rgba(15, 23, 42, 0.90);
+    --bg-sidebar: #0F172A;
+    --border: #334155;
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --text-on-dark: #F1F5F9;
+    --input-bg: #1E293B;
+    --input-text: #F1F5F9;
+    --input-border: #334155;
+    --input-placeholder: #64748B;
+    --accent: #3B82F6;
+    --accent-hover: #60A5FA;
+    --fc-bg: #1E293B;
+    --fc-header-bg: #293548;
+    --fc-text: #F1F5F9;
+    --fc-muted: #64748B;
+    --fc-border: #334155;
+    --fc-btn-bg: #293548;
+    --fc-btn-border: #334155;
+    --fc-btn-hover: #334155;
+    color-scheme: dark;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ESTILOS BASE GLOBALES — aplican variables a todos los elementos
+══════════════════════════════════════════════════════════ */
+body {
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+}
+
+/* ── Inputs, selects, textareas ─────────────────────────── */
+input,
+textarea,
+select {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    border-color: var(--input-border) !important;
+    caret-color: var(--input-text) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--input-placeholder) !important;
+}
+
+/* Forzar color-scheme para inputs nativos de fecha/hora */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"] {
+    color-scheme: inherit;
+}
+
+/* Fix autofill de Chrome (evita fondo azul/blanco forzado) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    -webkit-text-fill-color: var(--input-text) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ── Superficies (cards, modales, paneles) ──────────────── */
+.surface {
+    background-color: var(--bg-surface);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+/* ── Scrollbar personalizado ────────────────────────────── */
 [x-cloak] {
     display: none !important;
 }
 
-/* ── Metric Cards ─────────────────────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* ══════════════════════════════════════════════════════════
+   FULLCALENDAR — adaptado al tema activo
+══════════════════════════════════════════════════════════ */
+.fc {
+    --fc-border-color: var(--fc-border) !important;
+    --fc-button-bg-color: var(--fc-btn-bg) !important;
+    --fc-button-border-color: var(--fc-btn-border) !important;
+    --fc-button-text-color: var(--fc-text) !important;
+    --fc-button-hover-bg-color: var(--fc-btn-hover) !important;
+    --fc-button-hover-border-color: var(--fc-border) !important;
+    --fc-button-active-bg-color: var(--accent) !important;
+    --fc-button-active-border-color: var(--accent) !important;
+    --fc-page-bg-color: var(--fc-bg) !important;
+    --fc-neutral-bg-color: var(--fc-header-bg) !important;
+    font-family: inherit;
+    background-color: var(--fc-bg);
+    color: var(--fc-text);
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--fc-text);
+    text-transform: capitalize;
+}
+
+.fc .fc-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 0.75rem;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: white !important;
+}
+
+.fc .fc-button-primary:focus {
+    box-shadow: none !important;
+}
+
+.fc-v-event {
+    border: none !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.fc-timegrid-slot {
+    height: 2rem !important;
+}
+
+.fc-col-header-cell {
+    padding: 0.5rem 0 !important;
+    background: var(--fc-header-bg) !important;
+    border: none !important;
+}
+
+.fc-col-header-cell-cushion {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--fc-muted) !important;
+    text-transform: uppercase;
+    text-decoration: none !important;
+}
+
+.fc-timegrid-axis-cushion,
+.fc-timegrid-slot-label-cushion {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--fc-muted) !important;
+}
+
+.fc-scrollgrid {
+    border-color: var(--fc-border) !important;
+}
+
+.fc-scrollgrid td,
+.fc-scrollgrid th {
+    border-color: var(--fc-border) !important;
+}
+
+.fc-timegrid-now-indicator-line {
+    border-color: #EF4444 !important;
+}
+
+/* ── Metric Cards (legacy) ──────────────────────────────── */
 .metric-card {
     @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-start gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
 }

@@ -252,7 +252,7 @@
         </div>
 
         {{-- Calendario --}}
-        <div class="xl:col-span-3">
+        <div class="xl:col-span-3" wire:ignore>
             <div
                 class="bg-white rounded-[1.25rem] shadow-sm border border-[#E5E7EB] overflow-hidden flex flex-col h-full">
                 <div class="px-3 py-2 border-b border-[#E5E7EB] flex items-center justify-between">
@@ -307,7 +307,7 @@
                             </p>
                         </div>
                         <button type="button" @click="show = false"
-                            class="p-2 rounded-full hover:bg-gray-50 text-gray-500 hover:text-white transition-colors">
+                            class="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-[#1F2937] transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -325,21 +325,21 @@
                                 <div>
                                     <label
                                         class="block text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Fecha</label>
-                                    <input type="date" wire:model="date" required
+                                    <input type="date" wire:model="date" required style="color-scheme: light;"
                                         class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-3 text-sm font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </div>
                                 <div>
                                     <label
                                         class="block text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Hora
                                         Inicio</label>
-                                    <input type="time" wire:model="start_time" required
+                                    <input type="time" wire:model="start_time" required style="color-scheme: light;"
                                         class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-3 text-sm font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </div>
                                 <div>
                                     <label
                                         class="block text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Hora
                                         Fin</label>
-                                    <input type="time" wire:model="end_time"
+                                    <input type="time" wire:model="end_time" style="color-scheme: light;"
                                         class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-3 text-sm font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </div>
                             </div>

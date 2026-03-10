@@ -34,3 +34,13 @@ Route::get('/media/{path}', function ($path) {
     }
     return response()->file($fullPath);
 });
+
+Route::get('/events', function () {
+    return Event::all()->map(function ($event) {
+        return [
+            'title' => $event->title,
+            'start' => $event->start_date,
+            'end' => $event->end_date,
+        ];
+    });
+});
