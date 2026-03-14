@@ -182,8 +182,13 @@
                         @forelse($clients as $client)
                             @php
                                 $lastAppt = $client->appointments->first();
-                                $isRecent = $lastAppt && \Carbon\Carbon::parse($lastAppt->date)->gte(now()->startOfMonth());
-                                $isNewPlayer = $client->created_at->gte(now()->startOfMonth());
+                                if(!is_null($lastAppt)){
+                                    $isRecent = $lastAppt && \Carbon\Carbon::parse($lastAppt->date)->gte(now()->startOfMonth());
+                                    $isNewPlayer = $client->created_at->gte(now()->startOfMonth());
+                                }else{ 
+                                    $isRecent=false;
+                                    $isNewPlayer=false;
+                                }
                             @endphp
                             <tr class="hover:bg-slate-50/50 transition-colors">
                                 <td class="px-4 py-3">
