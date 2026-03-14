@@ -147,7 +147,7 @@
             </header>
 
             <!-- Page content -->
-            <main class="flex-1 p-4 md:p-5 space-y-4 overflow-y-auto custom-scrollbar">
+            <main class="flex-1 p-4 md:p-5 overflow-hidden flex flex-col min-h-0">
                 {{ $slot ?? '' }}
                 @yield('content')
             </main>

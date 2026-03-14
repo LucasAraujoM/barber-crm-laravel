@@ -1,28 +1,7 @@
-<div>
+<div class="flex flex-col h-full gap-2 min-h-0">
 
-    {{-- ══ ACCIONES Y TÍTULO ══════════════════════════════ --}}
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-extrabold text-[#1F2937] tracking-tight">
-                Bienvenido, {{ auth()->user()->name ?? 'Barbero' }}
-            </h1>
-            <p class="text-sm text-gray-500 font-medium">Aquí tienes el resumen de tu barbería para hoy.</p>
-        </div>
-        <div class="flex gap-2">
-            <button type="button" wire:click="resetModal"
-                class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#3B82F6] hover:bg-[#2563EB] text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Agendar Turno Rápido
-            </button>
-        </div>
-    </div>
-
-    {{-- ══ MÉTRICAS COMPACTAS ══════════════════════════════ --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-1 mt-4">
+    {{-- ══ MÉTRICAS + BOTÓN ══════════════════════════════ --}}
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-2 shrink-0">
 
         {{-- Turnos Hoy --}}
         <div
@@ -98,16 +77,31 @@
                 @endif
             </div>
         </div>
+        {{-- Botón Agendar (como tarjeta métrica) --}}
+        <button type="button" wire:click="resetModal"
+            class="bg-[#3B82F6] p-3 rounded-2xl shadow-md border border-[#2563EB] flex items-center gap-3 hover:bg-[#2563EB] active:scale-95 transition-all text-left w-full cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+            </div>
+            <div class="min-w-0 flex-1">
+                <p class="text-[10px] font-black text-indigo-100 uppercase tracking-widest mb-1">Agendar</p>
+                <p class="text-xs font-black text-white leading-tight">Turno Rápido</p>
+            </div>
+        </button>
     </div>
 
     {{-- ══ AGENDA + CALENDARIO ════════════════════════════ --}}
-    <div class="grid grid-cols-1 xl:grid-cols-4 gap-1 mt-2">
+    <div class="flex-1 grid grid-cols-1 xl:grid-cols-4 gap-2 min-h-0">
 
         {{-- Columna Izquierda --}}
-        <div class="xl:col-span-1 flex flex-col gap-1">
+        <div class="xl:col-span-1 flex flex-col min-h-0">
             {{-- Agenda de Hoy --}}
             <div
-                class="bg-white rounded-[1.25rem] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.3)] border border-[#E5E7EB] overflow-hidden flex flex-col">
+                class="bg-white rounded-[1.25rem] shadow-sm border border-[#E5E7EB] overflow-hidden flex flex-col flex-1 min-h-0">
                 <div class="px-4 py-3 border-b border-[#E5E7EB] flex items-center justify-between bg-white/80">
                     <div>
                         <h2 class="text-sm font-bold text-[#1F2937]">Agenda de Hoy</h2>
@@ -120,7 +114,7 @@
                         {{ $turnosHoy }}
                     </span>
                 </div>
-                <div class="flex-1 overflow-y-auto divide-y divide-[#E5E7EB] max-h-[460px] custom-scrollbar">
+                <div class="flex-1 overflow-y-auto divide-y divide-[#E5E7EB] custom-scrollbar min-h-0">
                     @forelse($appointments as $appt)
                         @php
                             $startTime = $appt->start_time ? \Carbon\Carbon::parse($appt->start_time) : null;
@@ -209,50 +203,10 @@
                     @endforelse
                 </div>
             </div>
-
-            {{-- Turnos Recientes --}}
-            <div
-                class="bg-white rounded-[1.25rem] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.3)] border border-[#E5E7EB] overflow-hidden flex flex-col">
-                <div class="px-4 py-3 border-b border-[#E5E7EB] flex items-center justify-between bg-white/80">
-                    <h2 class="text-sm font-bold text-[#1F2937]">Turnos Recientes</h2>
-                    <a href="{{ route('appointments.index') }}" wire:navigate
-                        class="text-[10px] font-black text-[#3B82F6] hover:text-indigo-300 transition-colors">VER TODOS
-                        →</a>
-                </div>
-                <div class="divide-y divide-[#E5E7EB] flex-1 overflow-y-auto max-h-[250px] custom-scrollbar">
-                    @forelse($recentAppointments as $appt)
-                        <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                            <div
-                                class="w-8 h-8 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] flex items-center justify-center font-black text-[10px] shrink-0 border border-[#3B82F6]/20">
-                                {{ strtoupper(substr($appt->client->name ?? $appt->guest_name ?? '?', 0, 1)) }}
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-bold text-[#1F2937] truncate">
-                                    {{ $appt->client->name ?? $appt->guest_name ?? 'Desconocido' }}
-                                </p>
-                                <p class="text-[11px] text-gray-500 font-semibold">
-                                    {{ \Carbon\Carbon::parse($appt->date)->diffForHumans() }}
-                                </p>
-                            </div>
-                            <div class="text-right shrink-0">
-                                <p class="text-xs font-black text-gray-500">
-                                    {{ \Carbon\Carbon::parse($appt->date)->format('d/m') }}
-                                </p>
-                                <p class="text-[10px] text-[#3B82F6] font-black uppercase tracking-tighter">
-                                    {{ $appt->staff->name ?? '' }}
-                                </p>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="p-10 text-center text-xs text-gray-500 font-bold uppercase tracking-widest">Sin
-                            actividad</div>
-                    @endforelse
-                </div>
-            </div>
         </div>
 
         {{-- Calendario --}}
-        <div class="xl:col-span-3" wire:ignore>
+        <div class="xl:col-span-3 flex flex-col min-h-0" wire:ignore>
             <div
                 class="bg-white rounded-[1.25rem] shadow-sm border border-[#E5E7EB] overflow-hidden flex flex-col h-full">
                 <div class="px-3 py-2 border-b border-[#E5E7EB] flex items-center justify-between">
@@ -285,188 +239,177 @@
         <div x-show="show" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-150"
             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-            class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto bg-white border border-[#E5E7EB] rounded-[2rem] shadow-2xl z-10">
+            class="relative w-full max-w-lg bg-white rounded-[1.5rem] shadow-2xl z-10 flex flex-col max-h-[90vh]">
 
-            <form wire:submit.prevent="saveAppointment">
+            <form wire:submit.prevent="saveAppointment" class="flex flex-col min-h-0 flex-1">
 
-                <div class="p-8">
-                    {{-- Header del modal --}}
-                    <div class="flex items-center justify-between mb-8">
-                        <div>
-                            <h3 class="text-2xl font-black text-[#1F2937] tracking-tight leading-none">
-                                {{ $editing_id ? 'Editar Turno' : 'Turno Rápido' }}
-                            </h3> @if($allStaff->count() == 0)
-                                <p class="text-xs text-rose-400 font-black uppercase tracking-widest mt-2">
-                                    No hay barberos registrados.
-                                    <a href="{{ route('staff') }}" wire:navigate class="underline text-rose-500">Registrar
-                                        uno</a>
-                                </p>
-                            @endif
-                            <p class="text-xs text-gray-500 font-black uppercase tracking-widest mt-1">
+                {{-- Header sticky --}}
+                <div class="px-6 py-4 border-b border-[#E5E7EB] flex items-center justify-between shrink-0">
+                    <div>
+                        <h3 class="text-lg font-black text-[#1F2937] tracking-tight leading-none">
+                            {{ $editing_id ? 'Editar Turno' : 'Nuevo Turno' }}
+                        </h3>
+                        @if($allStaff->count() == 0)
+                            <p class="text-[10px] text-rose-400 font-black uppercase tracking-widest mt-1">
+                                Sin barberos —
+                                <a href="{{ route('staff') }}" wire:navigate class="underline text-rose-500">Registrar
+                                    uno</a>
+                            </p>
+                        @else
+                            <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">
                                 {{ $editing_id ? 'Actualizando datos' : 'Agregado al instante' }}
                             </p>
-                        </div>
-                        <button type="button" @click="show = false"
-                            class="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-[#1F2937] transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="space-y-6">
-
-                        {{-- 1. FECHA Y HORA --}}
-                        <div class="bg-indigo-500/5 p-5 rounded-2xl border border-[#3B82F6]/20">
-                            <div class="grid grid-cols-3 gap-4">
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Fecha</label>
-                                    <input type="date" wire:model="date" required style="color-scheme: light;"
-                                        class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-3 text-sm font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Hora
-                                        Inicio</label>
-                                    <input type="time" wire:model="start_time" required style="color-scheme: light;"
-                                        class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-3 text-sm font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Hora
-                                        Fin</label>
-                                    <input type="time" wire:model="end_time" style="color-scheme: light;"
-                                        class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-3 text-sm font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- 2. BARBERO --}}
-                        <div>
-                            <div class="flex items-center justify-between mb-3">
-                                <label
-                                    class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Seleccionar
-                                    Barbero</label>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    @foreach($allStaff as $st)
-                                        <button type="button" wire:click="$set('selected_staff_id', {{ $st->id }})"
-                                            class="relative flex flex-col items-center p-4 border-2 rounded-2xl transition-all group overflow-hidden {{ $selected_staff_id == $st->id ? 'border-indigo-500 bg-[#3B82F6]/10 ring-2 ring-indigo-500/20' : 'border-[#E5E7EB] hover:border-indigo-400/50 hover:bg-gray-50' }}">
-                                            <div
-                                                class="w-10 h-10 rounded-full bg-[#F5F7FA] border border-[#E5E7EB] flex items-center justify-center mb-2 shadow-sm">
-                                                <span
-                                                    class="text-[10px] font-black text-[#3B82F6]">{{ strtoupper(substr($st->name, 0, 2)) }}</span>
-                                            </div>
-                                            <span class="text-[11px] font-black text-[#1F2937]">{{ $st->name }}</span>
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            {{-- 3. CLIENTE O INVITADO --}}
-                            <div x-data="{ isGuest: false }" @init-edit-modal.window="isGuest = $event.detail.isGuest">
-                                <div class="flex p-1 bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl mb-4">
-                                    <button type="button" @click="isGuest = false"
-                                        :class="!isGuest ? 'bg-white text-[#3B82F6] shadow-sm border border-[#E5E7EB]' : 'text-gray-500'"
-                                        class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all border border-transparent">Cliente
-                                        Registrado</button>
-                                    <button type="button" @click="isGuest = true"
-                                        :class="isGuest ? 'bg-white text-[#3B82F6] shadow-sm border border-[#E5E7EB]' : 'text-gray-500'"
-                                        class="flex-1 py-2.5 text-sm font-black rounded-lg transition-all border border-transparent">Invitado
-                                        /
-                                        Nuevo</button>
-                                </div>
-
-                                <div x-show="!isGuest" x-transition>
-                                    <label
-                                        class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Seleccionar
-                                        Cliente</label>
-                                    <select wire:model="client_id"
-                                        class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-4 text-sm font-bold text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                                        <option value="">Buscar cliente...</option>
-                                        @foreach($allClients as $cli)
-                                            <option value="{{ $cli->id }}">{{ $cli->name }}
-                                                ({{ $cli->phone ?? 'Sin teléfono' }})</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div x-show="isGuest" x-transition>
-                                    <label
-                                        class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Nombre
-                                        del Invitado</label>
-                                    <input type="text" wire:model="guest_name" placeholder="Ej: Juan Pérez"
-                                        class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-4 text-sm font-bold text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                            </div>
-
-                            {{-- 4. SERVICIOS Y ESTADO --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Servicios
-                                        (Opcional)</label>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        @foreach($allServices as $svc)
-                                            <label
-                                                class="relative flex flex-col p-3 border-2 border-[#E5E7EB] rounded-xl cursor-pointer transition-all hover:bg-gray-50 select-none text-center">
-                                                <input type="checkbox" wire:model="selected_services" value="{{ $svc->id }}"
-                                                    class="hidden">
-                                                <span
-                                                    class="text-[9px] text-[#1F2937] font-black uppercase tracking-tighter truncate">{{ $svc->name }}</span>
-                                                <span
-                                                    class="text-[8px] text-gray-500 opacity-60 mt-0.5">${{ number_format($svc->price, 0, ',', '.') }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Estado
-                                        y Notas</label>
-                                    <div class="space-y-3">
-                                        <select wire:model="status"
-                                            class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-4 text-sm font-bold text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                            <option value="pendiente">Pendiente</option>
-                                            <option value="en_progreso">En Progreso</option>
-                                            <option value="completado">Completado</option>
-                                            <option value="cancelado">Cancelado</option>
-                                        </select>
-
-                                        <textarea wire:model="notes" rows="2" placeholder="Notas adicionales..."
-                                            class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-3 px-4 text-sm text-[#1F2937] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 custom-scrollbar resize-none"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    {{-- Footer del modal --}}
-                    <div
-                        class="bg-[#F5F7FA] border-t border-[#E5E7EB] px-8 py-6 flex flex-col sm:flex-row-reverse gap-3 rounded-b-[2rem]">
-                        <button type="submit"
-                            class="flex-1 bg-[#3B82F6] hover:bg-[#2563EB] text-white font-black py-4 rounded-2xl transition-all shadow-md shadow-blue-500/20 text-sm">
-                            {{ $editing_id ? 'Actualizar Turno' : 'Confirmar Turno' }}
-                        </button>
-
-                        @if($editing_id)
-                            <button type="button" wire:click="deleteAppointment({{ $editing_id }})"
-                                class="flex-1 bg-rose-50 border-2 border-rose-100 text-rose-500 font-black py-4 rounded-2xl hover:bg-rose-500 hover:text-white transition-all text-sm">
-                                Eliminar Turno
-                            </button>
                         @endif
-
-                        <button type="button" @click="show = false"
-                            class="flex-1 bg-white border-2 border-[#E5E7EB] text-gray-500 font-black py-4 rounded-2xl hover:bg-gray-50 hover:text-[#1F2937] transition-all text-sm">
-                            Cancelar
-                        </button>
                     </div>
-            </form>
+                    <button type="button" @click="show = false"
+                        class="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
 
+                {{-- Body scrollable --}}
+                <div class="flex-1 overflow-y-auto custom-scrollbar px-6 py-4 space-y-4 min-h-0">
+
+                    {{-- 1. FECHA Y HORA --}}
+                    <div>
+                        <p class="text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Fecha y Hora</p>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Fecha</label>
+                                <input type="date" wire:model="date" required style="color-scheme: light;"
+                                    class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-2.5 px-3 text-xs font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Inicio</label>
+                                <input type="time" wire:model="start_time" required style="color-scheme: light;"
+                                    class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-2.5 px-3 text-xs font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Fin</label>
+                                <input type="time" wire:model="end_time" style="color-scheme: light;"
+                                    class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-2.5 px-3 text-xs font-bold text-[#1F2937] text-center focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 2. BARBERO --}}
+                    <div>
+                        <p class="text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Barbero</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            @foreach($allStaff as $st)
+                                <button type="button" wire:click="$set('selected_staff_id', {{ $st->id }})"
+                                    class="flex flex-col items-center p-3 border-2 rounded-xl transition-all {{ $selected_staff_id == $st->id ? 'border-[#3B82F6] bg-[#3B82F6]/8 ring-2 ring-[#3B82F6]/20' : 'border-[#E5E7EB] hover:border-[#3B82F6]/40 hover:bg-gray-50' }}">
+                                    <div
+                                        class="w-9 h-9 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] flex items-center justify-center font-black text-xs mb-1.5 ring-2 {{ $selected_staff_id == $st->id ? 'ring-[#3B82F6]/30' : 'ring-transparent' }}">
+                                        {{ strtoupper(substr($st->name, 0, 2)) }}
+                                    </div>
+                                    <span
+                                        class="text-[10px] font-black text-[#1F2937] truncate w-full text-center">{{ $st->name }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- 3. CLIENTE O INVITADO --}}
+                    <div x-data="{ isGuest: false }" @init-edit-modal.window="isGuest = $event.detail.isGuest">
+                        <p class="text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Cliente</p>
+                        <div class="flex p-1 bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl mb-3">
+                            <button type="button" @click="isGuest = false"
+                                :class="!isGuest ? 'bg-white text-[#3B82F6] shadow-sm border border-[#E5E7EB]' : 'text-gray-400'"
+                                class="flex-1 py-2 text-xs font-black rounded-lg transition-all border border-transparent">
+                                Registrado
+                            </button>
+                            <button type="button" @click="isGuest = true"
+                                :class="isGuest ? 'bg-white text-[#3B82F6] shadow-sm border border-[#E5E7EB]' : 'text-gray-400'"
+                                class="flex-1 py-2 text-xs font-black rounded-lg transition-all border border-transparent">
+                                Invitado
+                            </button>
+                        </div>
+                        <div x-show="!isGuest" x-transition>
+                            <select wire:model="client_id"
+                                class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-2.5 px-4 text-sm font-bold text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all cursor-pointer">
+                                <option value="">Seleccionar cliente...</option>
+                                @foreach($allClients as $cli)
+                                    <option value="{{ $cli->id }}">{{ $cli->name }} ({{ $cli->phone ?? 'Sin tel.' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div x-show="isGuest" x-transition>
+                            <input type="text" wire:model="guest_name" placeholder="Nombre del invitado"
+                                class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-2.5 px-4 text-sm font-bold text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                        </div>
+                    </div>
+
+                    {{-- 4. SERVICIOS Y ESTADO --}}
+                    <div class="grid grid-cols-2 gap-4">
+                        {{-- Servicios --}}
+                        <div>
+                            <p class="text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Servicios
+                            </p>
+                            <div class="grid grid-cols-1 gap-1.5">
+                                @foreach($allServices as $svc)
+                                    <label
+                                        class="flex items-center gap-2.5 p-2.5 border-2 rounded-xl cursor-pointer transition-all select-none
+                                            {{ in_array($svc->id, $selected_services ?? []) ? 'border-[#3B82F6] bg-[#3B82F6]/5' : 'border-[#E5E7EB] hover:bg-gray-50' }}">
+                                        <input type="checkbox" wire:model="selected_services" value="{{ $svc->id }}"
+                                            class="rounded text-[#3B82F6] focus:ring-indigo-400 shrink-0">
+                                        <div class="min-w-0">
+                                            <span
+                                                class="text-[10px] font-black text-[#1F2937] uppercase tracking-tight block truncate">{{ $svc->name }}</span>
+                                            <span
+                                                class="text-[9px] text-gray-400">${{ number_format($svc->price, 0, ',', '.') }}</span>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                        {{-- Estado y Notas --}}
+                        <div>
+                            <p class="text-[10px] font-black text-[#3B82F6] uppercase tracking-widest mb-2">Estado y
+                                Notas</p>
+                            <div class="space-y-2">
+                                <select wire:model="status"
+                                    class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-2.5 px-3 text-xs font-bold text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="en_progreso">En Progreso</option>
+                                    <option value="completado">Completado</option>
+                                    <option value="cancelado">Cancelado</option>
+                                </select>
+                                <textarea wire:model="notes" rows="4" placeholder="Notas adicionales..."
+                                    class="w-full bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl py-2.5 px-3 text-xs text-[#1F2937] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 custom-scrollbar resize-none transition-all"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- Footer sticky --}}
+                <div class="px-6 py-4 border-t border-[#E5E7EB] flex gap-3 shrink-0 bg-white rounded-b-[1.5rem]">
+                    @if($editing_id)
+                        <button type="button" wire:click="deleteAppointment({{ $editing_id }})"
+                            class="px-4 py-2.5 bg-rose-50 border-2 border-rose-100 text-rose-500 font-black rounded-xl hover:bg-rose-500 hover:text-white transition-all text-xs uppercase tracking-widest">
+                            Eliminar
+                        </button>
+                    @endif
+                    <button type="button" @click="show = false"
+                        class="flex-1 bg-[#F5F7FA] border border-[#E5E7EB] text-gray-500 font-black py-2.5 rounded-xl hover:bg-gray-100 transition-all text-xs uppercase tracking-widest">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="flex-1 bg-[#3B82F6] hover:bg-[#2563EB] text-white font-black py-2.5 rounded-xl transition-all shadow-md shadow-blue-200 text-xs uppercase tracking-widest">
+                        {{ $editing_id ? 'Actualizar' : 'Confirmar Turno' }}
+                    </button>
+                </div>
+
+            </form>
         </div>
     </div>
+
 </div>

@@ -22,6 +22,7 @@ class AppointmentController
         // ── Métricas rápidas ────────────────────────────────────────────────
         $totalAppointments = Appointment::count();
         $todayAppointments = Appointment::whereDate('date', $now->toDateString())->count();
+        $todayAppointmentsPending = Appointment::whereDate('date', $now->toDateString())->where('status', 'en_progreso')->count();
         $monthAppointments = Appointment::where('date', '>=', $startOfMonth)->count();
 
         // Próximos 7 días
@@ -91,6 +92,7 @@ class AppointmentController
             'allServices',
             'totalAppointments',
             'todayAppointments',
+            'todayAppointmentsPending',
             'monthAppointments',
             'upcomingWeek',
             'weekChartData'

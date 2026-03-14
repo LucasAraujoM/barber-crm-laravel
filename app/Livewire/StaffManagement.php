@@ -84,10 +84,10 @@ class StaffManagement extends Component
                 mkdir($destination, 0777, true);
             }
             $filename = uniqid() . '.' . $this->avatar->extension();
-            $this->avatar->storeAs(path: 'images', name: $filename, disk: 'app_data'); // Needs custom disk or move manually
 
-            // Manual move as in original controller
-            $this->avatar->toTemporaryFile()->move($destination, $filename);
+            // Manual move from Livewire's temporary storage to the destination
+            copy($this->avatar->getRealPath(), $destination . '/' . $filename);
+
             $staff->avatar = $filename;
         }
 

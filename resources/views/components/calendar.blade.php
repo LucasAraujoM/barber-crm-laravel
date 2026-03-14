@@ -3,33 +3,6 @@
     // In a real app, this would come from a controller or database query
     if (!empty($appointments)) {
         $events = $appointments;
-    } else {
-        $events = [
-            [
-                'title' => 'Corte - Juan Pérez',
-                'start' => now()->setTime(9, 0)->toIso8601String(),
-                'end' => now()->setTime(10, 0)->toIso8601String(),
-                'description' => 'Corte de pelo degradado',
-                'status' => 'pendiente',
-                'color' => '#3b82f6', // blue-500
-            ],
-            [
-                'title' => 'Barba - David',
-                'start' => now()->setTime(10, 30)->toIso8601String(),
-                'end' => now()->setTime(11, 0)->toIso8601String(),
-                'description' => 'Perfilado de barba',
-                'status' => 'completado',
-                'color' => '#22c55e', // green-500
-            ],
-            [
-                'title' => 'Corte + Barba - Mike',
-                'start' => now()->setTime(14, 0)->toIso8601String(),
-                'end' => now()->setTime(15, 0)->toIso8601String(),
-                'description' => 'Servicio completo',
-                'status' => 'cancelado',
-                'color' => '#ef4444', // red-500
-            ]
-        ];
     }
 @endphp
 
@@ -55,7 +28,7 @@
             },
             locale: 'es',
             editable: true,
-            height: 683, // Very compact height for dashboard
+            height: 750, // Very compact height for dashboard
             slotMinTime: '08:00:00', //agregar start_time
             slotMaxTime: '22:00:00', //agregar end_time
             buttonText: {

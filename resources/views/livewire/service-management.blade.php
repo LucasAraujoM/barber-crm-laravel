@@ -1,5 +1,5 @@
-<div>
-    <div class="space-y-4">
+<div class="flex flex-col h-full min-h-0">
+    <div class="space-y-4 overflow-y-auto custom-scrollbar flex-1 min-h-0 pr-1">
 
         {{-- ════ HEADER ════ --}}
         <div class="flex items-center justify-between">

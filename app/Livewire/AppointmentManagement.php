@@ -160,6 +160,26 @@ class AppointmentManagement extends Component
             default => '#f59e0b',
         };
     }
+    public function moveAppointment($id, $newStartISO, $newEndISO = null)
+    {
+        $appt = Appointment::find($id);
+        if ($appt) {
+            $start = Carbon::parse($newStartISO)->setTimezone('America/Argentina/Buenos_Aires');
+            $appt->date = $start->toDateString();
+            $appt->start_time = $start->toDateTimeString();
+
+            if ($newEndISO) {
+                $end = Carbon::parse($newEndISO)->setTimezone('America/Argentina/Buenos_Aires');
+                $appt->end_time = $end->toDateTimeString();
+            } else {
+                $appt->end_time = $start->copy()->addHour()->toDateTimeString();
+            }
+
+            $appt->save();
+            $this->dispatch('toast', message: 'Turno reprogramado');
+            $this->dispatch('calendar-updated');
+        }
+    }
 
     public function render()
     {
@@ -189,6 +209,9 @@ class AppointmentManagement extends Component
             'allServices' => Service::orderBy('name')->get(),
             'totalAppointments' => Appointment::count(),
             'todayAppointments' => Appointment::whereDate('date', $now->toDateString())->count(),
+            'todayAppointmentsCompleted' => Appointment::whereDate('date', $now->toDateString())->where('status', 'completado')->count(),
+            'todayAppointmentsPending' => Appointment::whereDate('date', $now->toDateString())->where('status', 'en_progreso')->count(),
+            'todayAppointmentsCanceled' => Appointment::whereDate('date', $now->toDateString())->where('status', 'cancelado')->count(),
             'monthAppointments' => Appointment::where('date', '>=', $now->copy()->startOfMonth())->count(),
             'upcomingWeek' => Appointment::whereBetween('date', [$now->toDateString(), $now->copy()->addDays(7)->toDateString()])->count(),
             'events' => $this->getEvents(),
