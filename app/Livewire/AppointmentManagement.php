@@ -40,6 +40,9 @@ class AppointmentManagement extends Component
     public $isEditing = false;
     public $appointmentToDelete = null;
 
+    // Metrics toggle
+    public $metricsView = 'hoy';
+
     protected $queryString = [
         'date_from' => ['except' => ''],
         'date_to' => ['except' => ''],
@@ -50,6 +53,11 @@ class AppointmentManagement extends Component
     public function mount()
     {
         $this->date = date('Y-m-d');
+    }
+
+    public function setMetricsView($view)
+    {
+        $this->metricsView = $view;
     }
 
     public function openCreate($date = null, $time = null)
@@ -202,19 +210,50 @@ class AppointmentManagement extends Component
 
         $query->orderBy('date', 'desc')->orderBy('start_time', 'asc');
 
+        // --- Metrics per period ---
+        $metricsQuery = Appointment::query();
+        $metricsLabel = 'Hoy';
+
+        switch ($this->metricsView) {
+            case 'semana':
+                $metricsQuery->whereBetween('date', [
+                    $now->copy()->startOfWeek()->toDateString(),
+                    $now->copy()->endOfWeek()->toDateString(),
+                ]);
+                $metricsLabel = 'Esta semana';
+                break;
+            case 'mes':
+                $metricsQuery->whereBetween('date', [
+                    $now->copy()->startOfMonth()->toDateString(),
+                    $now->copy()->endOfMonth()->toDateString(),
+                ]);
+                $metricsLabel = 'Este mes';
+                break;
+            case 'historico':
+                $metricsLabel = 'Histórico';
+                break;
+            default: // hoy
+                $metricsQuery->whereDate('date', $now->toDateString());
+                $metricsLabel = 'Hoy';
+                break;
+        }
+
+        $metricsBase = clone $metricsQuery;
+
         return view('livewire.appointment-management', [
-            'appointments' => $query->paginate(10),
-            'staffMembers' => Staff::all(),
-            'allClients' => Client::orderBy('name')->get(),
-            'allServices' => Service::orderBy('name')->get(),
-            'totalAppointments' => Appointment::count(),
-            'todayAppointments' => Appointment::whereDate('date', $now->toDateString())->count(),
-            'todayAppointmentsCompleted' => Appointment::whereDate('date', $now->toDateString())->where('status', 'completado')->count(),
-            'todayAppointmentsPending' => Appointment::whereDate('date', $now->toDateString())->where('status', 'en_progreso')->count(),
-            'todayAppointmentsCanceled' => Appointment::whereDate('date', $now->toDateString())->where('status', 'cancelado')->count(),
-            'monthAppointments' => Appointment::where('date', '>=', $now->copy()->startOfMonth())->count(),
-            'upcomingWeek' => Appointment::whereBetween('date', [$now->toDateString(), $now->copy()->addDays(7)->toDateString()])->count(),
-            'events' => $this->getEvents(),
+            'appointments'          => $query->paginate(10),
+            'staffMembers'          => Staff::all(),
+            'allClients'            => Client::orderBy('name')->get(),
+            'allServices'           => Service::orderBy('name')->get(),
+            'metricsLabel'          => $metricsLabel,
+            'metricsTotal'          => (clone $metricsBase)->count(),
+            'metricsCompleted'      => (clone $metricsBase)->where('status', 'completado')->count(),
+            'metricsPending'        => (clone $metricsBase)->where('status', 'pendiente')->count(),
+            'metricsCanceled'       => (clone $metricsBase)->where('status', 'cancelado')->count(),
+            'todayAppointments'     => Appointment::whereDate('date', $now->toDateString())->count(),
+            'monthAppointments'     => Appointment::where('date', '>=', $now->copy()->startOfMonth())->count(),
+            'upcomingWeek'          => Appointment::whereBetween('date', [$now->toDateString(), $now->copy()->addDays(7)->toDateString()])->count(),
+            'events'                => $this->getEvents(),
         ]);
     }
 }

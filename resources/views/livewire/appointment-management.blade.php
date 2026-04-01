@@ -1,29 +1,46 @@
 <div class="flex flex-col h-full gap-3">
     {{-- ════ MÉTRICAS ════ --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 shrink-0">
-        <div class="bg-[#3B82F6] p-3 rounded-2xl shadow-md border border-[#2563EB] flex items-center gap-3 text-white">
-            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+        @php
+            $views = ['hoy', 'semana', 'mes', 'historico'];
+            $labels = ['hoy' => 'Hoy', 'semana' => 'Semana', 'mes' => 'Mes', 'historico' => 'Histórico'];
+            $currentIndex = array_search($metricsView, $views);
+            $nextView = $views[($currentIndex + 1) % count($views)];
+        @endphp
+        <div
+            wire:click="setMetricsView('{{ $nextView }}')"
+            class="bg-[#3B82F6] p-3 rounded-2xl shadow-md border border-[#2563EB] flex items-center gap-3 text-white cursor-pointer select-none hover:bg-[#2563EB] active:scale-[0.98] transition-all group"
+            title="Click para cambiar período"
+        >
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 group-hover:bg-white/30 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
             </div>
             <div class="grid grid-cols-2 gap-x-2 gap-y-1 flex-1">
+                <div class="col-span-2 flex items-center justify-between mb-0.5">
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-80">Turnos · {{ $metricsLabel }}</p>
+                    <span class="text-[8px] font-black uppercase opacity-60 bg-white/20 px-1.5 py-0.5 rounded-full tracking-widest">
+                        → {{ $labels[$nextView] }}
+                    </span>
+                </div>
                 <div>
-                    <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">Turnos Hoy</p>
-                    <p class="text-xl font-black leading-none">{{ $totalAppointments }}</p>
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">Total</p>
+                    <p class="text-xl font-black leading-none">{{ $metricsTotal }}</p>
                 </div>
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">Completados</p>
-                    <p class="text-xl font-black leading-none">{{ $todayAppointmentsCompleted }}</p>
+                    <p class="text-xl font-black leading-none">{{ $metricsCompleted }}</p>
                 </div>
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">Pendientes</p>
-                    <p class="text-xl font-black leading-none @if($todayAppointmentsPending) text-amber-300 @endif">{{ $todayAppointmentsPending }}</p>
+                    <p class="text-xl font-black leading-none @if($metricsPending) text-amber-300 @endif">{{ $metricsPending }}</p>
                 </div>
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">Cancelados</p>
-                    <p class="text-xl font-black leading-none @if($todayAppointmentsCanceled) text-red-300 @endif">{{ $todayAppointmentsCanceled }}</p>
+                    <p class="text-xl font-black leading-none @if($metricsCanceled) text-red-300 @endif">{{ $metricsCanceled }}</p>
                 </div>
             </div>
         </div>
+
         <div class="bg-white p-3 rounded-2xl shadow-sm border border-[#E5E7EB] flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z" /><polyline points="12 6 12 12 16 14" /></svg>
@@ -189,7 +206,7 @@
             {{-- Lista de Turnos --}}
             <div class="bg-white rounded-[1.25rem] shadow-sm border border-[#E5E7EB] overflow-hidden flex flex-col flex-1 min-h-0">
                 <div class="px-4 py-3 border-b border-[#E5E7EB] flex items-center justify-between shrink-0">
-                    <h3 class="text-xs font-black text-[#1F2937] uppercase tracking-widest">Turnos Recientes</h3>
+                    <h3 class="text-xs font-black text-[#1F2937] uppercase tracking-widest">Lista de turnos</h3>
                     <span class="text-[10px] font-black bg-[#3B82F6]/10 text-[#3B82F6] px-2 py-0.5 rounded-full">{{ $appointments->total() }}</span>
                 </div>
                 <div class="divide-y divide-[#E5E7EB] flex-1 overflow-y-auto custom-scrollbar">

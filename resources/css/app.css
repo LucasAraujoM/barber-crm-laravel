@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'filepond/dist/filepond.min.css';
 @import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+@import '../../vendor/livewire/flux/dist/flux.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -12,141 +13,8 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* ══════════════════════════════════════════════════════════
-   TEMA LIGHT (por defecto)
-══════════════════════════════════════════════════════════ */
-:root,
-[data-theme="light"] {
-    --bg-app: #F5F7FA;
-    --bg-surface: #FFFFFF;
-    --bg-surface-2: #F5F7FA;
-    --bg-header: rgba(255, 255, 255, 0.85);
-    --bg-sidebar: #1E293B;
-    --border: #E5E7EB;
-    --text-primary: #1F2937;
-    --text-secondary: #6B7280;
-    --text-muted: #9CA3AF;
-    --text-on-dark: #FFFFFF;
-    --input-bg: #F5F7FA;
-    --input-text: #1F2937;
-    --input-border: #E5E7EB;
-    --input-placeholder: #9CA3AF;
-    --accent: #3B82F6;
-    --accent-hover: #2563EB;
-    --fc-bg: #FFFFFF;
-    --fc-header-bg: #F5F7FA;
-    --fc-text: #1F2937;
-    --fc-muted: #9CA3AF;
-    --fc-border: #E5E7EB;
-    --fc-btn-bg: #FFFFFF;
-    --fc-btn-border: #E5E7EB;
-    --fc-btn-hover: #F3F4F6;
-    color-scheme: light;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-/* ══════════════════════════════════════════════════════════
-   TEMA DARK
-══════════════════════════════════════════════════════════ */
-[data-theme="dark"] {
-    --bg-app: #0F172A;
-    --bg-surface: #1E293B;
-    --bg-surface-2: #293548;
-    --bg-header: rgba(15, 23, 42, 0.90);
-    --bg-sidebar: #0F172A;
-    --border: #334155;
-    --text-primary: #F1F5F9;
-    --text-secondary: #94A3B8;
-    --text-muted: #64748B;
-    --text-on-dark: #F1F5F9;
-    --input-bg: #1E293B;
-    --input-text: #F1F5F9;
-    --input-border: #334155;
-    --input-placeholder: #64748B;
-    --accent: #3B82F6;
-    --accent-hover: #60A5FA;
-    --fc-bg: #1E293B;
-    --fc-header-bg: #293548;
-    --fc-text: #F1F5F9;
-    --fc-muted: #64748B;
-    --fc-border: #334155;
-    --fc-btn-bg: #293548;
-    --fc-btn-border: #334155;
-    --fc-btn-hover: #334155;
-    color-scheme: dark;
-}
-
-/* ══════════════════════════════════════════════════════════
-   ESTILOS BASE GLOBALES — aplican variables a todos los elementos
-══════════════════════════════════════════════════════════ */
-body {
-    background-color: var(--bg-app);
-    color: var(--text-primary);
-}
-
-/* ── Inputs, selects, textareas ─────────────────────────── */
-input,
-textarea,
-select {
-    background-color: var(--input-bg) !important;
-    color: var(--input-text) !important;
-    border-color: var(--input-border) !important;
-    caret-color: var(--input-text) !important;
-}
-
-input::placeholder,
-textarea::placeholder {
-    color: var(--input-placeholder) !important;
-}
-
-/* Forzar color-scheme para inputs nativos de fecha/hora */
-input[type="date"],
-input[type="time"],
-input[type="datetime-local"],
-input[type="month"],
-input[type="week"] {
-    color-scheme: inherit;
-}
-
-/* Fix autofill de Chrome (evita fondo azul/blanco forzado) */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-select:-webkit-autofill {
-    -webkit-text-fill-color: var(--input-text) !important;
-    -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-/* ── Superficies (cards, modales, paneles) ──────────────── */
-.surface {
-    background-color: var(--bg-surface);
-    border-color: var(--border);
-    color: var(--text-primary);
-}
-
-/* ── Scrollbar personalizado ────────────────────────────── */
-[x-cloak] {
-    display: none !important;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--text-muted);
-    border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
-}
 
 /* ══════════════════════════════════════════════════════════
    FULLCALENDAR — adaptado al tema activo
