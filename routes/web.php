@@ -10,21 +10,25 @@ use App\Livewire\Settings;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Middleware\CheckAppPassword;
 
-Route::get('/unlock', function (\Illuminate\Http\Request $request) {
-    $password = $request->query('p', '');
+Route::post('/unlock', function (\Illuminate\Http\Request $request) {
+    $password = $request->input('password', '');
     if (empty($password)) {
-        return response()->json(['error' => 'Password required'], 400);
+        return back()->with('error', 'Contraseña requerida');
     }
     $storedHash = \App\Models\Setting::get('app_password');
     if (empty($storedHash)) {
-        return response()->json(['success' => true]);
+        return redirect()->route('home');
     }
     if (\Illuminate\Support\Facades\Hash::check($password, $storedHash)) {
         $request->session()->put('app_unlocked', true);
-        return response()->json(['success' => true]);
+        return redirect()->route('home')->cookie('app_unlocked_token', $storedHash, 60 * 24 * 365);
     }
-    return response()->json(['error' => 'Invalid password'], 401);
+    return back()->with('error', 'Contraseña incorrecta');
 })->name('unlock');
+Route::get('/logout', function () {
+    request()->session()->forget('app_unlocked');
+    return redirect('/')->withCookie(Cookie::forget('app_unlocked_token'));
+})->name('logout');
 
 Route::middleware(CheckAppPassword::class)->group(function () {
     Route::get('/', Dashboard::class)->name('home');
@@ -39,6 +43,8 @@ Route::get('/appointments/check-availability', [AppointmentController::class, 'c
 
 Route::get('/media/{path}', function ($path) {
     $fullPath = base_path('app-data/images/' . $path);
-    if (!file_exists($fullPath)) { abort(404); }
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
     return response()->file($fullPath);
 });

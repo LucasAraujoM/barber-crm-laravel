@@ -25,6 +25,11 @@ class CheckAppPassword
             return $next($request);
         }
 
+        if ($request->cookie('app_unlocked_token') === $storedHash) {
+            $request->session()->put($sessionKey, true);
+            return $next($request);
+        }
+
         if ($request->hasHeader('X-App-Unlocked') && $request->header('X-App-Unlocked') === $storedHash) {
             $request->session()->put($sessionKey, true);
             return $next($request);
