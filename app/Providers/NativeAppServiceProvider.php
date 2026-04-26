@@ -14,10 +14,10 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     public function boot(): void
     {
         Window::open()
-            ->height(720)
-            ->width(1280)
-            ->minHeight(720)
-            ->minWidth(1280)
+            ->height(768)
+            ->width(1366)
+            ->minHeight(768)
+            ->minWidth(1366)
             ->hideMenu();
     }
 

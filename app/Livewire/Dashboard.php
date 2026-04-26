@@ -230,6 +230,7 @@ class Dashboard extends Component
         }
 
         $this->showQuickModal = false;
+        $this->dispatch('close-modal');
         $this->reset(['editing_id', 'client_id', 'guest_name', 'selected_staff_id', 'date', 'start_time', 'end_time', 'notes', 'selected_services', 'status']);
         $this->loadData();
         $this->dispatch('toast', message: $msg);
@@ -281,9 +282,9 @@ class Dashboard extends Component
     public function resetModal()
     {
         $this->reset(['editing_id', 'client_id', 'guest_name', 'selected_staff_id', 'date', 'start_time', 'end_time', 'notes', 'selected_services', 'status']);
-        // Default values
         $this->status = 'pendiente';
         $this->showQuickModal = true;
+        $this->dispatch('open-modal');
     }
 
     public function getEvents()

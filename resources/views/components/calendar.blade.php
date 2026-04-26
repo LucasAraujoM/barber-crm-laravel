@@ -6,7 +6,7 @@
     }
 @endphp
 
-<div class="w-full relative" x-data="{
+<div class="w-full h-full relative flex flex-col min-h-0" x-data="{
     events: @js($events),
     calendar: null,
     initCalendar() {
@@ -28,7 +28,7 @@
             },
             locale: 'es',
             editable: true,
-            height: 750, // Very compact height for dashboard
+            height: '100%',
             slotMinTime: '08:00:00', //agregar start_time
             slotMaxTime: '22:00:00', //agregar end_time
             buttonText: {
@@ -105,7 +105,7 @@
     }
 }" x-init="initCalendar()" @calendar-updated.window="refreshCalendar()">
     {{-- FullCalendar Container --}}
-    <div x-ref="calendarEl" class="w-full min-h-[380px]"></div>
+    <div x-ref="calendarEl" class="w-full flex-1 min-h-0"></div>
 </div>
 
 {{-- Los estilos de FullCalendar se cargan desde resources/css/app.css con soporte dark/light --}}
