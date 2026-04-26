@@ -46,6 +46,7 @@ class ClientManagement extends Component
     {
         $this->reset(['clientId', 'name', 'email', 'phone', 'notes', 'isEditing']);
         $this->showModal = true;
+        $this->dispatch('open-client-modal');
     }
 
     public function openEdit($id)
@@ -58,6 +59,7 @@ class ClientManagement extends Component
         $this->notes = $client->notes;
         $this->isEditing = true;
         $this->showModal = true;
+        $this->dispatch('open-client-modal');
     }
 
     public function save()
@@ -76,6 +78,7 @@ class ClientManagement extends Component
         $client->save();
 
         $this->showModal = false;
+        $this->dispatch('close-client-modal');
         $this->dispatch('toast', message: $this->isEditing ? 'Cliente actualizado' : 'Cliente registrado');
     }
 
@@ -89,7 +92,8 @@ class ClientManagement extends Component
         if ($this->clientToDelete) {
             Client::find($this->clientToDelete)->delete();
             $this->clientToDelete = null;
-            $this->dispatch('toast', message: 'Cliente eliminado');
+        $this->dispatch('close-delete-client-modal');
+        $this->dispatch('toast', message: 'Cliente eliminado');
         }
     }
 
