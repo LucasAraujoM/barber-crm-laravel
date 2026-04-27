@@ -177,13 +177,13 @@
                             @php
                                 $lastAppt = $client->appointments->first();
                                 $isRecent = $lastAppt && \Carbon\Carbon::parse($lastAppt->date)->gte(now()->startOfMonth());
-                                $isNewPlayer = $client->created_at->gte(now()->startOfMonth());
+                                $isNewPlayer = $client->created_at ? $client->created_at->gte(now()->startOfMonth()) : false;
                             @endphp
                             <tr class="hover:bg-base-200/50">
                                 <td>
                                     <div class="flex items-center gap-3">
                                         <div class="avatar placeholder">
-                                            <div class="w-8 rounded-xl text-xs font-bold"
+                                            <div class="w-8 rounded-xl text-xs font-bold flex items-center justify-center"
                                                 style="background: {{ sprintf('hsl(%d, 60%%, 55%%)', crc32($client->name) % 360) }}; color: white;">
                                                 <span>{{ strtoupper(substr($client->name, 0, 1)) }}</span>
                                             </div>

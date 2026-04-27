@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Log;
+use Native\Desktop\Facades\AutoUpdater;
 use Native\Desktop\Facades\Window;
 use Native\Desktop\Contracts\ProvidesPhpIni;
 
@@ -14,6 +16,10 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     public function boot(): void
     {
         Window::open()
+            ->afterOpen(function () {
+                Log::info("Buscando actualizaciones...");
+                AutoUpdater::checkForUpdates();
+            })
             ->height(768)
             ->width(1366)
             ->minHeight(768)
