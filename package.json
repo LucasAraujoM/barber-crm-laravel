@@ -1,7 +1,9 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
     "private": true,
+    "author": "LucasAraujoM",
     "repository": "https://github.com/LucasAraujoM/barber-crm",
+    "license": "MIT",
     "type": "module",
     "scripts": {
         "build": "vite build",
